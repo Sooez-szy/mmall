@@ -2,10 +2,12 @@ package com.mmall.service;
 
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by sooszy on 2017/11/9.
  */
+
 public interface IUserService {
 
     ServerResponse<User> login(String username, String password);
@@ -23,5 +25,9 @@ public interface IUserService {
     ServerResponse<String> resetPassword(String passwordOld,String passwordNew,User user);
 
     ServerResponse<User> update_information(User user);
+
+    ServerResponse<User> get_information(Integer userId);
+
+    ServerResponse checkAdminRole(User user);
 }
 

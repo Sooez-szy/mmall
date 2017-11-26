@@ -48,7 +48,7 @@ public class UserServiceImpl implements IUserService {
      */
     public ServerResponse<String> register(User user){
         //用户名是否存在校验
-        ServerResponse validResponse = this.checkValid(user.getUsername(),Const.USERNAME);
+        ServerResponse<String> validResponse = this.checkValid(user.getUsername(),Const.USERNAME);
         if(!validResponse.isSuccess()){
             return validResponse;
         }
@@ -136,6 +136,7 @@ public class UserServiceImpl implements IUserService {
         }
 
         String token = TokenCache.getKey(TokenCache.TOKEN_PREFIX+username);
+        System.out.print(token);
         if(org.apache.commons.lang3.StringUtils.isBlank(token)){
             return ServerResponse.createByErrorMessage("token无效或者token过期");
         }
@@ -155,7 +156,7 @@ public class UserServiceImpl implements IUserService {
     public ServerResponse<String> resetPassword(String passwordOld,String passwordNew,User user){
         //防止横向越权，要校验下这个用户的旧密码一定是这个用户
         int resultCount = userMapper.checkPassword(MD5Util.MD5EncodeUtf8(passwordOld),user.getId());
-        if(resultCount>0){
+        if(resultCount == 0){
             return ServerResponse.createByErrorMessage("旧密码错误！");
         }
         user.setPassword(MD5Util.MD5EncodeUtf8(passwordNew));
@@ -186,4 +187,27 @@ public class UserServiceImpl implements IUserService {
         }
         return ServerResponse.createByErrorMessage("更新个人信息失败");
     }
+
+    /**
+     * 查询当前用户信息
+     * @param userId
+     * @return
+     */
+    public ServerResponse<User> get_information(Integer userId){
+         User user = userMapper.selectByPrimaryKey(userId);
+         if(user == null){
+             return ServerResponse.createByErrorMessage("找不到当前用户！");
+         }
+         user.setPassword(StringUtils.EMPTY);
+         return ServerResponse.createBySuccess(user);
+    }
+
+    //backend
+    public ServerResponse checkAdminRole(User user){
+        if(user != null && user.getRole().intValue() == Const.Role.ROLE_ADMIN){
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
+    }
+
 }

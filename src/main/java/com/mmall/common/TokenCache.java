@@ -29,7 +29,7 @@ public class TokenCache {
     }
 
     public static String getKey(String key){
-        String value = null;
+        String value = "null";
         try{
             value = localCache.get(key);
             if("null".equals(value)){
@@ -38,6 +38,6 @@ public class TokenCache {
         }catch (Exception e){
             logger.error("localCache get error",e);
         }
-        return null;
+        return value;
     }
 }
